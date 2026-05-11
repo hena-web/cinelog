@@ -31,6 +31,30 @@ class MovieModel {
     );
   }
 
+  factory MovieModel.fromEntity(Movie movie) {
+    return MovieModel(
+      id: movie.id,
+      title: movie.title,
+      overview: movie.overview,
+      posterPath: movie.posterPath,
+      backdropPath: movie.backdropPath,
+      releaseDate: movie.releaseDate,
+      voteAverage: movie.voteAverage,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'overview': overview,
+      'poster_path': posterPath,
+      'backdrop_path': backdropPath,
+      'release_date': releaseDate,
+      'vote_average': voteAverage,
+    };
+  }
+
   Movie toEntity() {
     return Movie(
       id: id,

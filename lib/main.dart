@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/env/env.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+import 'core/constants/storage_constants.dart';
+import 'core/env/env.dart';
+import 'features/favorites/presentation/screens/favorite_movies_screen.dart';
+import 'features/movies/presentation/screens/popular_movies_screen.dart';
+import 'features/movies/presentation/screens/search_movies_screen.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  await Hive.openBox<dynamic>(StorageConstants.favoriteMoviesBox);
+
   runApp(
     const ProviderScope(
       child: CineLogApp(),
@@ -23,8 +34,8 @@ class CineLogApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: Env.hasApiKey
-    ? const MainNavigationScreen()
-    : const MissingApiKeyScreen(),
+          ? const MainNavigationScreen()
+          : const MissingApiKeyScreen(),
     );
   }
 }
@@ -87,47 +98,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-class PopularMoviesScreen extends StatelessWidget {
-  const PopularMoviesScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Popüler filmler burada listelenecek.',
-        style: TextStyle(fontSize: 18),
-      ),
-    );
-  }
-}
-
-class SearchMoviesScreen extends StatelessWidget {
-  const SearchMoviesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Film arama ekranı burada olacak.',
-        style: TextStyle(fontSize: 18),
-      ),
-    );
-  }
-}
-
-class FavoriteMoviesScreen extends StatelessWidget {
-  const FavoriteMoviesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Favori filmler burada gösterilecek.',
-        style: TextStyle(fontSize: 18),
-      ),
-    );
-  }
-}
 class MissingApiKeyScreen extends StatelessWidget {
   const MissingApiKeyScreen({super.key});
 
