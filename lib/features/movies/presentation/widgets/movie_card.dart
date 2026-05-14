@@ -5,14 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../favorites/presentation/providers/favorite_movies_provider.dart';
 import '../../domain/entities/movie.dart';
-
-
+import '../screens/movie_detail_screen.dart';
 
 class MovieCard extends ConsumerWidget {
-  const MovieCard({
-    required this.movie,
-    super.key,
-  });
+  const MovieCard({required this.movie, super.key});
 
   final Movie movie;
 
@@ -29,7 +25,13 @@ class MovieCard extends ConsumerWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          // Detay ekranını daha sonra açacağız.
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return MovieDetailScreen(movieId: movie.id);
+              },
+            ),
+          );
         },
         child: Row(
           children: [
@@ -45,9 +47,7 @@ class MovieCard extends ConsumerWidget {
                       imageUrl: '${ApiConstants.imageBaseUrl}$posterPath',
                       fit: BoxFit.cover,
                       placeholder: (context, url) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return const Center(child: CircularProgressIndicator());
                       },
                       errorWidget: (context, url, error) {
                         return const Icon(Icons.broken_image);
@@ -78,22 +78,20 @@ class MovieCard extends ConsumerWidget {
                                 .toggleFavorite(movie);
                           },
                           icon: Icon(
-                            isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
                             color: isFavorite ? Colors.red : null,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text('Yıl: ${movie.releaseYear}'),
+                    Text('Year: ${movie.releaseYear}'),
                     const SizedBox(height: 4),
-                    Text('Puan: ${movie.voteAverage.toStringAsFixed(1)}'),
+                    Text('Rating: ${movie.voteAverage.toStringAsFixed(1)}'),
                     const SizedBox(height: 8),
                     Text(
                       movie.overview.isEmpty
-                          ? 'Açıklama bulunamadı.'
+                          ? 'No description available.'
                           : movie.overview,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,

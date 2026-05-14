@@ -35,17 +35,17 @@ class MovieDetail {
 
   String get runtimeText {
     if (runtime <= 0) {
-      return 'Süre bilgisi yok';
+      return 'Runtime unavailable';
     }
 
     final hours = runtime ~/ 60;
     final minutes = runtime % 60;
 
     if (hours == 0) {
-      return '$minutes dk';
+      return '$minutes min';
     }
 
-    return '${hours}s ${minutes}dk';
+    return '${hours}h ${minutes}min';
   }
 
   Movie toMovie() {

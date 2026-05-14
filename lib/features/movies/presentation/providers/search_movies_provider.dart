@@ -10,13 +10,17 @@ class SearchMoviesState {
     this.isLoading = false,
     this.errorMessage,
     this.hasSearched = false,
-  });
+    List<String>? recentSearches,
+  }) : _recentSearches = recentSearches;
 
   final String query;
   final List<Movie> movies;
   final bool isLoading;
   final String? errorMessage;
   final bool hasSearched;
+  final List<String>? _recentSearches;
+
+  List<String> get recentSearches => _recentSearches ?? const [];
 
   SearchMoviesState copyWith({
     String? query,
@@ -25,6 +29,7 @@ class SearchMoviesState {
     String? errorMessage,
     bool clearError = false,
     bool? hasSearched,
+    List<String>? recentSearches,
   }) {
     return SearchMoviesState(
       query: query ?? this.query,
@@ -32,14 +37,15 @@ class SearchMoviesState {
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       hasSearched: hasSearched ?? this.hasSearched,
+      recentSearches: recentSearches ?? this.recentSearches,
     );
   }
 }
 
 final searchMoviesProvider =
     NotifierProvider<SearchMoviesNotifier, SearchMoviesState>(
-  SearchMoviesNotifier.new,
-);
+      SearchMoviesNotifier.new,
+    );
 
 class SearchMoviesNotifier extends Notifier<SearchMoviesState> {
   @override
@@ -51,7 +57,7 @@ class SearchMoviesNotifier extends Notifier<SearchMoviesState> {
     final trimmedQuery = query.trim();
 
     if (trimmedQuery.isEmpty) {
-      state = const SearchMoviesState();
+      clearSearch();
       return;
     }
 
@@ -72,6 +78,7 @@ class SearchMoviesNotifier extends Notifier<SearchMoviesState> {
         isLoading: false,
         clearError: true,
         hasSearched: true,
+        recentSearches: _updatedRecentSearches(trimmedQuery),
       );
     } catch (error) {
       state = state.copyWith(
@@ -83,6 +90,24 @@ class SearchMoviesNotifier extends Notifier<SearchMoviesState> {
   }
 
   void clearSearch() {
-    state = const SearchMoviesState();
+    state = state.copyWith(
+      query: '',
+      movies: [],
+      isLoading: false,
+      clearError: true,
+      hasSearched: false,
+    );
+  }
+
+  List<String> _updatedRecentSearches(String query) {
+    final normalizedQuery = query.toLowerCase();
+    final searches = [
+      query,
+      ...state.recentSearches.where(
+        (search) => search.toLowerCase() != normalizedQuery,
+      ),
+    ];
+
+    return searches.take(5).toList();
   }
 }

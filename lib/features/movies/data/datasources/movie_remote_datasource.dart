@@ -14,9 +14,7 @@ class MovieRemoteDatasource {
     try {
       final response = await _dio.get(
         ApiConstants.popularMovies,
-        queryParameters: {
-          'page': page,
-        },
+        queryParameters: {'page': page},
       );
 
       final data = response.data as Map<String, dynamic>;
@@ -27,10 +25,10 @@ class MovieRemoteDatasource {
       }).toList();
     } on DioException catch (error) {
       throw AppException(
-        error.message ?? 'Filmler yüklenirken bir ağ hatası oluştu.',
+        error.message ?? 'A network error occurred while loading movies.',
       );
     } catch (_) {
-      throw AppException('Filmler yüklenirken beklenmeyen bir hata oluştu.');
+      throw AppException('An unexpected error occurred while loading movies.');
     }
   }
 
@@ -41,10 +39,7 @@ class MovieRemoteDatasource {
     try {
       final response = await _dio.get(
         ApiConstants.searchMovies,
-        queryParameters: {
-          'query': query,
-          'page': page,
-        },
+        queryParameters: {'query': query, 'page': page},
       );
 
       final data = response.data as Map<String, dynamic>;
@@ -55,18 +50,16 @@ class MovieRemoteDatasource {
       }).toList();
     } on DioException catch (error) {
       throw AppException(
-        error.message ?? 'Arama yapılırken bir ağ hatası oluştu.',
+        error.message ?? 'A network error occurred while searching.',
       );
     } catch (_) {
-      throw AppException('Arama yapılırken beklenmeyen bir hata oluştu.');
+      throw AppException('An unexpected error occurred while searching.');
     }
   }
 
   Future<MovieDetailModel> getMovieDetail(int movieId) async {
     try {
-      final detailResponse = await _dio.get(
-        ApiConstants.movieDetail(movieId),
-      );
+      final detailResponse = await _dio.get(ApiConstants.movieDetail(movieId));
 
       final recommendationResponse = await _dio.get(
         ApiConstants.movieRecommendations(movieId),
@@ -85,11 +78,12 @@ class MovieRemoteDatasource {
       );
     } on DioException catch (error) {
       throw AppException(
-        error.message ?? 'Film detayı yüklenirken bir ağ hatası oluştu.',
+        error.message ??
+            'A network error occurred while loading movie details.',
       );
     } catch (_) {
       throw AppException(
-        'Film detayı yüklenirken beklenmeyen bir hata oluştu.',
+        'An unexpected error occurred while loading movie details.',
       );
     }
   }
