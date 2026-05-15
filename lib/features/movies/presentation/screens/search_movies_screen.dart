@@ -37,8 +37,8 @@ class _SearchMoviesScreenState extends ConsumerState<SearchMoviesScreen> {
 
     _debounce = Timer(const Duration(milliseconds: 400), () {
       _search(value);
-    });
-  }
+    }); // debounde timer
+      }
 
   void _search(String value) {
     ref.read(searchMoviesProvider.notifier).searchMovies(value);

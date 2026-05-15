@@ -38,17 +38,33 @@ class FavoriteMoviesScreen extends ConsumerWidget {
 
     return ColoredBox(
       color: Colors.blue.shade900,
-      child: GridView.builder(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: favoriteMovies.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.6,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-        ),
         itemBuilder: (context, index) {
-          return _FavoriteMovieTile(movie: favoriteMovies[index]);
+          final movie = favoriteMovies[index];
+
+          return Dismissible(
+            key: ValueKey(movie.id),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              alignment: Alignment.centerRight,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+              padding: const EdgeInsets.only(right: 24),
+              decoration: BoxDecoration(
+                color: Colors.red.shade700,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.delete, color: Colors.white),
+            ),
+            confirmDismiss: (_) async {
+              await ref
+                  .read(favoriteMoviesProvider.notifier)
+                  .removeFavorite(movie.id);
+              return false;
+            },
+            child: _FavoriteMovieTile(movie: movie),
+          );
         },
       ),
     );
@@ -62,62 +78,86 @@ class _FavoriteMovieTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return MovieDetailScreen(movieId: movie.id);
-            },
-          ),
-        );
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                width: double.infinity,
-                child: movie.posterPath == null
-                    ? const ColoredBox(
-                        color: Color(0xFF102B5E),
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: _favoritesMutedTextColor,
-                        ),
-                      )
-                    : CachedNetworkImage(
-                        imageUrl:
-                            '${ApiConstants.imageBaseUrl}${movie.posterPath}',
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                        errorWidget: (context, url, error) {
-                          return const Icon(
-                            Icons.broken_image,
-                            color: _favoritesMutedTextColor,
-                          );
-                        },
+    return Card(
+      color: const Color(0xFF0D2F68),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return MovieDetailScreen(movieId: movie.id);
+              },
+            ),
+          );
+        },
+        child: Row(
+          children: [
+            SizedBox(
+              width: 82,
+              height: 122,
+              child: movie.posterPath == null
+                  ? const ColoredBox(
+                      color: Color(0xFF102B5E),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: _favoritesMutedTextColor,
                       ),
+                    )
+                  : CachedNetworkImage(
+                      imageUrl:
+                          '${ApiConstants.imageBaseUrl}${movie.posterPath}',
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                      errorWidget: (context, url, error) {
+                        return const Icon(
+                          Icons.broken_image,
+                          color: _favoritesMutedTextColor,
+                        );
+                      },
+                    ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 8, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      movie.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: _favoritesTextColor,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      movie.overview.isEmpty
+                          ? 'No overview available.'
+                          : movie.overview,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: _favoritesMutedTextColor,
+                        height: 1.25,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            movie.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: _favoritesTextColor,
-              fontWeight: FontWeight.w700,
+            const Padding(
+              padding: EdgeInsets.only(right: 14),
+              child: Icon(Icons.favorite, color: Colors.red, size: 28),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
