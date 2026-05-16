@@ -111,6 +111,40 @@ Kod analizini çalıştırmak için:
 flutter analyze
 ```
 
+## Ekran Görüntüleri
+
+Proje ekran görüntüleri `docs/` klasörü altında yer almaktadır.
+
+| Popüler Filmler | Arama |
+| --- | --- |
+| ![Popüler Filmler](docs/popular_screen.png) | ![Arama](docs/search_screen.png) |
+
+| Film Detayı | Favoriler |
+| --- | --- |
+| ![Film Detayı](docs/detail_screen.png) | ![Favoriler](docs/favorite_screen.png) |
+
+## Test Kapsamı
+
+Testler `test/` klasörü altında tutulur ve aşağıdaki komutla çalıştırılır:
+
+```bash
+flutter test
+```
+
+Case study beklentisi en az 3 unit test ve en az 1 widget test olduğu için test
+kapsamı şu başlıkları içermelidir:
+
+- Unit test: `MovieModel.fromJson` dönüşümünün doğru çalışması.
+- Unit test: `MovieModel.fromEntity` ve entity/model dönüşümünün doğru yapılması.
+- Unit test: Favori repository veya datasource katmanında favori ekleme/çıkarma
+  davranışının doğrulanması.
+- Widget test: Favori filmler veya popüler filmler ekranının temel UI öğelerini
+  doğru render etmesi.
+
+Mevcut test dosyası `test/widget_test.dart` altında yer alır. Test kapsamı
+genişletilirken unit testler için ayrı dosyalar oluşturulması, widget testlerin
+ise ilgili ekran davranışlarına odaklanması önerilir.
+
 ## Proje Yapısı
 
 Proje feature-first bir klasörleme ile düzenlenmiştir:
